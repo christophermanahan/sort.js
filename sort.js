@@ -1,39 +1,43 @@
+const swap = (arr, i, j) => {
+  temp = arr[i];
+  arr[i] = arr[j];
+  arr[j] = temp;
+}
+
+const compare = (arr, i, j) => {
+  return arr[j] < arr[i];
+}
+
 /*------------- SORTING ALGORITHMS -------------*/
 
 /*------------- QUICKSORT -------------*/
-const quickSort = (arr) => {
-  if (arr.length === 0) return arr;
-  let part = partition(arr);
-  arr = part[0];
-  let pivot = part[1];
-  return quickSort(arr.slice(0, pivot)).concat(arr[pivot], quickSort(arr.slice(pivot + 1)));
+const quickSort = (arr, left, right) => {
+  left = left !== undefined ? left : 0;
+  right = right !== undefined ? right : arr.length - 1;
+  if (left >= right) return;
+  let pivot = partition(arr, left, right);
+  quickSort(arr, left, pivot - 1);
+  quickSort(arr, pivot + 1, right);
 }
 
-const partition = (arr) => {
-  let temp, i, j;
-  
-  //choose random pivot and swap with first element in array
-  let pivot = Math.floor(Math.random() * arr.length);
-  temp = arr[0];
-  arr[0] = arr[pivot];
-  arr[pivot] = temp;
-  
-  for (i = 1, j = 1; j < arr.length; j++) {
-    if (arr[j] < arr[0]) {
-      temp = arr[i];
-      arr[i] = arr[j];
-      arr[j] = temp;
+const partition = (arr, left, right) => {
+  let i, j;
+  //choose random pivot and swap with first element in array partition
+  let pivot = Math.floor(Math.random() * (right - left) + left);
+  swap(arr, left, pivot);
+
+  for (i = left + 1, j = left + 1; j <= right; j++) {
+    if (compare(arr, left, j)) {
+      swap(arr, i, j);
       i++;
     }
   }
-  
-  temp = arr[0];
-  arr[0] = arr[i - 1];
-  arr[i - 1] = temp;
-  return [arr, i - 1];
+
+  swap(arr, left, i - 1);
+  return i - 1;
 }
 
-console.log(quickSort([5,8,6,4,2,1,7,20,3,9,45,10,11,100,12]));
+console.log(quickSort([17, 16, 14, 2, 19, 13, 3, 9, 4, 7, 10, 5, 6, 11, 18, 20, 8, 1, 15, 12]));
 
 /*------------- MERGESORT -------------*/
 
@@ -80,4 +84,4 @@ const buildMaxHeap = (arr) => {
   for (let i = Math.floor(arr.length/2); i > -1; i--) maxHeapify(arr, i);
 }
 
-console.log(heapSort([9,3,2,1,4,10,14,15,8,7]));
+//console.log(heapSort([9,3,2,1,4,10,14,15,8,7]));
