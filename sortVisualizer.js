@@ -1,4 +1,4 @@
-class sort {
+class Sort {
 
 	constructor (canvas) {
 		this.canvas = canvas;
@@ -9,13 +9,11 @@ class sort {
 		this.arr = [];
 		this.displayArr = [];
 		this.next = [];
-
 		//create and shuffle array
 		for (let i = 1; i < 21; i++) {
 			this.arr.push(i);
 		}
-		shuffle(this.arr);
-
+		this.shuffle(this.arr);
 		//create display array
 		for (let i = 0; i < 20; i++) {
 			this.displayArr.push({
@@ -23,14 +21,17 @@ class sort {
 				color: this.defaultColor
 			});
 		}
-
-		this.canvasArray = this.canvasArray.bind(this);
 		this.animate = this.animate.bind(this);
 		this.animateNext = this.animateNext.bind(this);
-		this.swap = this.swap.bind(this);
-		this.compare = this.compare.bind(this);
-		this.selectPivot = this.selectPivot.bind(this);
-		this.unselectPivot = this.unselectPivot.bind(this);
+	}
+
+	/*----------------- FISHER YATES SHUFFLE -----------------*/
+	shuffle (arr) {
+		let j;
+	  for (let i = arr.length; i; i--) {
+	    j = Math.floor(Math.random() * i);
+	    this.swap(arr, i - 1, j);
+	  }
 	}
 
 	canvasArray (iSwap, jSwap) {
@@ -38,13 +39,11 @@ class sort {
 		//clear canvas
 		ctx.fillStyle = '#fff';
 		ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
-  	
   	//array elements
   	let yRatio = this.canvas.height / this.arr.length,
   		space = this.canvas.width / this.arr.length,
   		barWidth = space / 2,
   		x = space / 4;
-
   	for (let i = 0; i < this.arr.length; i++) {
   		//set swap animation variables
   		if (i === iSwap) {
@@ -58,13 +57,12 @@ class sort {
   		this.drawArrayElement(ctx, i, x, yRatio, barWidth);
   		x += space;
   	}
-
   	//swapping animation loop
   	const animateSwap = () => {
   		//clear array elements
   		ctx.fillStyle = '#fff';
-  		ctx.fillRect(iSwapX, 0, barWidth, this.canvas.height);
-  		ctx.fillRect(jSwapX, 0, barWidth, this.canvas.height);
+  		ctx.fillRect(iSwapX - 1, 0, barWidth + 2, this.canvas.height);
+  		ctx.fillRect(jSwapX - 1, 0, barWidth + 2, this.canvas.height);
   		//redraw array elements in-between swapping elements
   		let x = (space / 4) + (space * (iSwap + 1));
   		for (let i = iSwap + 1; i < jSwap; i++) {
@@ -73,11 +71,11 @@ class sort {
   		}
   		//redraw swapping elements
   		if (iSwap < jSwap) {
-	  		iSwapX += Math.min(25, Math.abs(jSwapXStart - iSwapX));
-	  		jSwapX -= Math.min(25, Math.abs(iSwapXStart - jSwapX));
+	  		iSwapX += Math.min(150, Math.abs(jSwapXStart - iSwapX));
+	  		jSwapX -= Math.min(150, Math.abs(iSwapXStart - jSwapX));
   		} else {
-  			iSwapX -= Math.min(25, Math.abs(jSwapXStart - iSwapX));
-	  		jSwapX += Math.min(25, Math.abs(iSwapXStart - jSwapX));
+  			iSwapX -= Math.min(150, Math.abs(jSwapXStart - iSwapX));
+	  		jSwapX += Math.min(150, Math.abs(iSwapXStart - jSwapX));
   		}
   		ctx.fillStyle = this.swapColor;
   		ctx.fillRect(iSwapX, this.canvas.height - iSwapY, barWidth, iSwapY);
@@ -89,7 +87,7 @@ class sort {
   			window.requestAnimationFrame(animateSwap);
   		}
   	}
-
+  	//start animation loop
   	if (jSwap) {
   		var iSwapXStart = iSwapX;
   		var jSwapXStart = jSwapX;
@@ -105,7 +103,7 @@ class sort {
 
 	animate () {
 		this.canvasArray();
-		window.setInterval(this.animateNext, 100);
+		window.setInterval(this.animateNext, 200);
 	}
 
 	animateNext () {
@@ -140,8 +138,8 @@ class sort {
 
 	colorSwap (i, j, type) {
 		if (this.displayArr[i] && this.displayArr[j]) {
-			this.displayArr[i].color = this.displayArr[i].color != this.pivotColor ? type : this.pivotColor;
-			this.displayArr[j].color = this.displayArr[j].color != this.pivotColor ? type : this.pivotColor;
+			this.displayArr[i].color = this.displayArr[i].color !== this.pivotColor ? type : this.pivotColor;
+			this.displayArr[j].color = this.displayArr[j].color !== this.pivotColor ? type : this.pivotColor;
 		}
 	}
 
@@ -170,23 +168,12 @@ class sort {
 	}
 }
 
-/*----------------- FISHER YATES SHUFFLE -----------------*/
-
-const shuffle = (arr) => {
-	let j, temp;
-  for (let i = arr.length; i; i--) {
-    j = Math.floor(Math.random() * i);
-    temp = arr[i - 1];
-    arr[i - 1] = arr[j];
-    arr[j] = temp;
-  }
-}
-
 /*----------------- DOM EVENTS -----------------*/
-
 window.onload = () => {
 	let canvas = document.getElementById('main-canvas');
-	let sortVis = new sort(canvas);
+	canvas.height = 0.9 * window.innerHeight;
+	canvas.width = 0.9 * window.innerWidth;
+	let sortVis = new Sort(canvas);
 	sortVis.animate();
 	document.getElementById('start-btn').onclick = () => {
 		console.log(sortVis.arr);
@@ -194,10 +181,7 @@ window.onload = () => {
 		console.log(sortVis.arr);
 	}
 
-	/*----------------- SORTING ALGOS -----------------*/
-
 	/*----------------- QUICKSORT -----------------*/
-
 	const partition = (arr, left, right) => {
 	  let i, j;
 	  //choose random pivot and swap with first element in array partition
@@ -227,7 +211,6 @@ window.onload = () => {
 	}
 
 	/*----------------- HEAPSORT -----------------*/
-
 	const buildMaxHeap = (arr) => {
 	  arr.heapsize = arr.length - 1;
 	  for (let i = Math.floor(arr.length/2); i > -1; i--) maxHeapify(arr, i);

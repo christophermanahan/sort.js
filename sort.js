@@ -37,7 +37,7 @@ const partition = (arr, left, right) => {
   return i - 1;
 }
 
-console.log(quickSort([17, 16, 14, 2, 19, 13, 3, 9, 4, 7, 10, 5, 6, 11, 18, 20, 8, 1, 15, 12]));
+//console.log(quickSort([17, 16, 14, 2, 19, 13, 3, 9, 4, 7, 10, 5, 6, 11, 18, 20, 8, 1, 15, 12]));
 
 /*------------- MERGESORT -------------*/
 
