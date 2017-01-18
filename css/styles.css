@@ -1,0 +1,15 @@
+body {
+	margin: 0;
+}
+
+.sidebar {
+	background-color: #ffbb7a;
+	width: 20vw;
+    height: 100vh;
+    float: left;
+}
+
+.canvas {
+	width: 1;
+	float: left;
+}
