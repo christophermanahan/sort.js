@@ -6,26 +6,19 @@ class Sort {
 		this.compareColor = '#333';
 		this.swapColor = '#111';
 		this.pivotColor = 'red';
-		this.sort = "quick";
+		this.sort = 'quick';
 		this.size = 20;
 		this.interval = 100;
 		this.animate = 0;
 		this.swapCount = 0;
 		this.compareCount = 0;
-		// //create and shuffle array
-		// for (let i = 1; i < this.size + 1; i++) {
-		// 	this.arr.push(i);
-		// }
-		// this.shuffle(this.arr);
-		// //create display array
-		// for (let i = 0; i < this.size; i++) {
-		// 	this.displayArr.push({
-		// 		value: this.arr[i],
-		// 		color: this.defaultColor
-		// 	});
-		// }
-		//this.animate = this.animate.bind(this);
 		this.animateNext = this.animateNext.bind(this);
+	}
+
+	swap (arr, i, j) {
+		let temp = arr[i];
+	  arr[i] = arr[j];
+	  arr[j] = temp;
 	}
 
 	/*----------------- FISHER YATES SHUFFLE -----------------*/
@@ -42,7 +35,7 @@ class Sort {
 		this.displayArr = [];
 		this.next = [];
 		//create and shuffle array
-		for (let i = 1; i < this.size + 1; i++) {
+		for (let i = 1; i < +this.size + 1; i++) {
 			this.arr.push(i);
 		}
 		this.shuffle(this.arr);
@@ -110,10 +103,17 @@ class Sort {
   	}
   	//start animation loop
   	if (jSwap) {
-  		//increase animation swap speed for more distant elements
-  		var pixelDistance = Math.abs(iSwap - jSwap) * 10;
+  		let intervalAdjust;
+  		//increase animation swap speed for more distant elements and adjust to interval and canvas size
+  		if (+this.interval === 10) intervalAdjust = 600;
+  		if (+this.interval === 50) intervalAdjust = 300;
+  		if (+this.interval === 100) intervalAdjust = 200;
+  		if (+this.interval === 500) intervalAdjust = 100;
+  		if (+this.interval === 1000) intervalAdjust = 50;
   		var iSwapXStart = iSwapX;
   		var jSwapXStart = jSwapX;
+  		var pixelDistance = (Math.abs(iSwapXStart - jSwapXStart) / this.canvas.width) * intervalAdjust;
+  		console.log(iSwapXStart, jSwapXStart, pixelDistance)
   		window.requestAnimationFrame(animateSwap);
   	}
 	}
@@ -123,11 +123,6 @@ class Sort {
 		ctx.fillStyle = this.displayArr[i].color;
 		ctx.fillRect(x, this.canvas.height - y, width, y);
 	}
-
-	// animate () {
-	// 	this.canvasArray();
-	// 	window.setInterval(this.animateNext, this.interval);
-	// }
 
 	animateNext () {
 		if (!this.next.length) {
@@ -166,22 +161,18 @@ class Sort {
 		}
 	}
 
-	displaySwap (arr, i, j) {
+	displaySwap (i, j) {
 		this.swapCount++;
-		this.swap(arr, i, j);
+		let temp = this.arr[i];
+	  this.arr[i] = this.arr[j];
+	  this.arr[j] = temp;
 		this.next.push(['swap', i, j]);
 	}
 
-	swap (arr, i, j) {
-		let temp = arr[i];
-	  arr[i] = arr[j];
-	  arr[j] = temp;
-	}
-
-	compare (arr, i, j) {
+	compare (i, j) {
 		this.compareCount++;
 		this.next.push(['compare', i, j]);
-		return arr[j] < arr[i];
+		return this.arr[j] < this.arr[i];
 	}
 
 	selectPivot (i) {
@@ -193,72 +184,80 @@ class Sort {
 	}
 
 	/*----------------- QUICKSORT -----------------*/
-	partition (arr, left, right) {
+	partition (left, right) {
 	  let i, j;
 	  //choose random pivot and swap with first element in array partition
 	  let pivot = Math.floor(Math.random() * (right - left) + left);
 	  this.selectPivot(pivot);
-	  if (left !== pivot) this.displaySwap(arr, left, pivot);
+	  if (left !== pivot) this.displaySwap(left, pivot);
 
 	  for (i = left + 1, j = left + 1; j <= right; j++) {
-	    if (this.compare(arr, left, j)) {
-	    	if (i !== j) this.displaySwap(arr, i, j);
+	    if (this.compare(left, j)) {
+	    	if (i !== j) this.displaySwap(i, j);
 	      i++;
 	    }
 	  }
 
-	  if (left !== i - 1) this.displaySwap(arr, left, i - 1);
+	  if (left !== i - 1) this.displaySwap(left, i - 1);
 	  this.unselectPivot(i - 1);
 	  return i - 1;
 	}
 
-	quickSort (arr, left, right) {
+	quickSort (left, right) {
 		left = left !== undefined ? left : 0;
-		right = right !== undefined ? right : arr.length - 1;
+		right = right !== undefined ? right : this.arr.length - 1;
 	  if (left >= right) return;
-	  let pivot = this.partition(arr, left, right);
-	  this.quickSort(arr, left, pivot - 1);
-	  this.quickSort(arr, pivot + 1, right);
+	  let pivot = this.partition(left, right);
+	  this.quickSort(left, pivot - 1);
+	  this.quickSort(pivot + 1, right);
 	}
 
 	/*----------------- HEAPSORT -----------------*/
-	buildMaxHeap (arr) {
-	  arr.heapsize = arr.length - 1;
-	  for (let i = Math.floor(arr.length / 2); i > -1; i--) this.maxHeapify(arr, i);
+	buildMaxHeap () {
+	  this.arr.heapsize = this.arr.length - 1;
+	  for (let i = Math.floor(this.arr.length / 2); i > -1; i--) this.maxHeapify(i);
 	}
 
-	maxHeapify (arr, i) {
+	maxHeapify (i) {
 	  let left = 2 * i,
 	      right = 2 * i + 1,
 	      max = i;
 
-	  if (left <= arr.heapsize && this.compare(arr, left, max)) max = left;
-	  if (right <= arr.heapsize && this.compare(arr, right, max)) max = right;
+	  if (left <= this.arr.heapsize && this.compare(left, max)) max = left;
+	  if (right <= this.arr.heapsize && this.compare(right, max)) max = right;
 	  if(max !== i) {
-	    this.displaySwap(arr, i, max);
-	    this.maxHeapify(arr, max);
+	    this.displaySwap(i, max);
+	    this.maxHeapify(max);
 	  }
 	}
 
-	heapSort (arr) {
-	  this.buildMaxHeap(arr);
-	  for (let i = arr.length - 1; i > 0; i--) {
-	    this.displaySwap(arr, 0, i)
-	    arr.heapsize--;
-	    this.maxHeapify(arr, 0);
+	heapSort () {
+	  this.buildMaxHeap();
+	  for (let i = this.arr.length - 1; i > 0; i--) {
+	    this.displaySwap(0, i)
+	    this.arr.heapsize--;
+	    this.maxHeapify(0);
 	  }
-	  return arr;
 	}
 }
 
 /*----------------- DOM EVENTS -----------------*/
 window.onload = () => {
+	//initialize canvas and array
 	let canvas = document.getElementById('main-canvas');
 	canvas.height = window.innerHeight;
 	canvas.width = 0.8 * window.innerWidth;
 	let sortVis = new Sort(canvas);
 	sortVis.buildArray();
 	sortVis.canvasArray();
+	//initialize click and change handlers
+	let e = document.getElementById("elements");
+	e.onchange = () => {
+		let size = e.options[e.selectedIndex].value;
+		sortVis.size = size;
+		sortVis.buildArray();
+		sortVis.canvasArray();
+	}
 	document.getElementById('quick').onclick = () => {
 		sortVis.sort = 'quick';
 	}
@@ -277,40 +276,10 @@ window.onload = () => {
 		if (sortVis.animate) window.clearInterval(sortVis.animate);
 		//get interval and sort and begin animation
 		let e = document.getElementById("interval");
-		let value = e.options[e.selectedIndex].value;
-		sortVis.interval = value;
+		let interval = e.options[e.selectedIndex].value;
+		sortVis.interval = interval;
 		sortVis.animate = window.setInterval(sortVis.animateNext, sortVis.interval);
-		console.log(!!sortVis.animate)
-		if (sortVis.sort === 'quick') sortVis.quickSort(sortVis.arr);
-		if (sortVis.sort === 'heap') sortVis.heapSort(sortVis.arr);
+		if (sortVis.sort === 'quick') sortVis.quickSort();
+		if (sortVis.sort === 'heap') sortVis.heapSort();
 	}
-
-	// /*----------------- HEAPSORT -----------------*/
-	// const buildMaxHeap = (arr) => {
-	//   arr.heapsize = arr.length - 1;
-	//   for (let i = Math.floor(arr.length/2); i > -1; i--) maxHeapify(arr, i);
-	// }
-
-	// const maxHeapify = (arr, i) => {
-	//   let left = 2 * i,
-	//       right = 2 * i + 1,
-	//       max = i;
-
-	//   if (left <= arr.heapsize && sortVis.compare(arr, left, max)) max = left;
-	//   if (right <= arr.heapsize && sortVis.compare(arr, right, max)) max = right;
-	//   if(max !== i) {
-	//     sortVis.displaySwap(arr, i, max);
-	//     maxHeapify(arr, max);
-	//   }
-	// }
-
-	// const heapSort = (arr) => {
-	//   buildMaxHeap(arr);
-	//   for (let i = arr.length - 1; i > 0; i--) {
-	//     sortVis.displaySwap(arr, 0, i)
-	//     arr.heapsize--;
-	//     maxHeapify(arr, 0);
-	//   }
-	//   return arr;
-	// }
 }
