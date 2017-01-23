@@ -2,10 +2,10 @@ class Sort {
 
 	constructor (canvas) {
 		this.canvas = canvas;
-		this.defaultColor = 'blue';
-		this.compareColor = '#333';
-		this.swapColor = '#111';
-		this.pivotColor = 'red';
+		this.defaultColor = '#E0E0E0';
+		this.compareColor = '#18FFFF';
+		this.swapColor = '#E040FB';
+		this.pivotColor = '#FFFF8D';
 		this.sort = 'quick';
 		this.size = 20;
 		this.interval = 100;
@@ -22,11 +22,11 @@ class Sort {
 	}
 
 	/*----------------- FISHER YATES SHUFFLE -----------------*/
-	shuffle (arr) {
+	shuffle () {
 		let j;
-	  for (let i = arr.length; i; i--) {
+	  for (let i = this.arr.length; i; i--) {
 	    j = Math.floor(Math.random() * i);
-	    this.swap(arr, i - 1, j);
+	    this.swap(this.arr, i - 1, j);
 	  }
 	}
 
@@ -38,7 +38,7 @@ class Sort {
 		for (let i = 1; i < +this.size + 1; i++) {
 			this.arr.push(i);
 		}
-		this.shuffle(this.arr);
+		this.shuffle();
 		//create display array
 		for (let i = 0; i < this.size; i++) {
 			this.displayArr.push({
@@ -51,7 +51,7 @@ class Sort {
 	canvasArray (iSwap, jSwap) {
 		let ctx = this.canvas.getContext('2d');
 		//clear canvas
-		ctx.fillStyle = '#f0f0f0';
+		ctx.fillStyle = '#212121';
 		ctx.fillRect(0, 0, this.canvas.width, this.canvas.height);
   	//draw array elements
   	let yRatio = (this.canvas.height - 50) / this.arr.length,
@@ -74,7 +74,7 @@ class Sort {
   	//swapping animation loop
   	const animateSwap = () => {
   		//clear array elements
-  		ctx.fillStyle = '#f0f0f0';
+  		ctx.fillStyle = '#212121';
   		ctx.fillRect(iSwapX - 1, 0, width + 2, this.canvas.height);
   		ctx.fillRect(jSwapX - 1, 0, width + 2, this.canvas.height);
   		//redraw array elements in-between swapping elements
@@ -113,7 +113,6 @@ class Sort {
   		var iSwapXStart = iSwapX;
   		var jSwapXStart = jSwapX;
   		var pixelDistance = (Math.abs(iSwapXStart - jSwapXStart) / this.canvas.width) * intervalAdjust;
-  		console.log(iSwapXStart, jSwapXStart, pixelDistance)
   		window.requestAnimationFrame(animateSwap);
   	}
 	}
@@ -225,7 +224,7 @@ class Sort {
 
 	  if (left <= this.arr.heapsize && this.compare(left, max)) max = left;
 	  if (right <= this.arr.heapsize && this.compare(right, max)) max = right;
-	  if(max !== i) {
+	  if (max !== i) {
 	    this.displaySwap(i, max);
 	    this.maxHeapify(max);
 	  }
@@ -246,7 +245,7 @@ window.onload = () => {
 	//initialize canvas and array
 	let canvas = document.getElementById('main-canvas');
 	canvas.height = window.innerHeight;
-	canvas.width = 0.8 * window.innerWidth;
+	canvas.width = 0.85 * window.innerWidth;
 	let sortVis = new Sort(canvas);
 	sortVis.buildArray();
 	sortVis.canvasArray();

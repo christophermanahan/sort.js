@@ -1,18 +1,21 @@
 <html>
   <head>
     <title>sort.js</title>
+    <link href="https://fonts.googleapis.com/css?family=Raleway" rel="stylesheet">
     <link rel="stylesheet" type="text/css" href="css/styles.css">
   </head>
 
   <body>
   	<div>
       <div class="sidebar">
-        <h1>sort.js</h1>
-        <ul>
-          <li id="quick">quickSort</li>
-          <li id="heap">heapSort</li>
-        </ul>
-        Elements
+        <p id="header">sort.js</p><hr>
+        <form>
+          <input type="radio" name="sort" class="input" id="quick" checked>
+          <label for="quick" class="label">quickSort</label><hr>
+          <input type="radio" name="sort" class="input" id="heap">
+          <label for="heap" class="label">heapSort</label><hr>
+        </form>
+        <h3>Elements</h3>
         <select id="elements">
           <option value="10">10</option>
           <option value="20" selected="selected">20</option>
@@ -20,7 +23,8 @@
           <option value="100">100</option>
           <option value="200">200</option>
         </select>
-        Interval (ms)
+        <hr>
+        <h3>Interval (ms)</h3>
         <select id="interval">
           <option value="10">10</option>
           <option value="50">50</option>
@@ -28,6 +32,7 @@
           <option value="500">500</option>
           <option value="1000">1000</option>
         </select>
+        <hr>
         <button id='reset-btn'>Reset</button>
         <button id='start-btn'>Start</button>
       </div>
