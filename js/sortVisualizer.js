@@ -2,7 +2,8 @@ class Sort {
 
 	constructor (canvas) {
 		this.canvas = canvas;
-		this.defaultColor = '#E0E0E0';
+		this.defaultColor = '#757575';
+		this.activeColor = '#FAFAFA';
 		this.compareColor = '#18FFFF';
 		this.swapColor = '#E040FB';
 		this.pivotColor = '#FFFF8D';
@@ -134,29 +135,41 @@ class Sort {
 				animate = next[0],
 				i = next[1],
 				j = next[2];
-
-		if (animate === 'selectPivot') {
+		if (animate === 'active') {
+			console.log('here')
+			for (let k = i; k <= j; k++) {
+				if (this.displayArr[k].color !== this.pivotColor && this.displayArr[k].color !== this.tempColor) {
+					this.displayArr[k].color = this.activeColor;
+				}
+			}
+			this.canvasArray();
+		} else if (animate === 'inactive') {
+			for (let k = i; k <= j; k++) {
+				this.displayArr[k].color = this.defaultColor;
+			}
+			this.canvasArray();
+		} else if (animate === 'selectPivot') {
 			this.displayArr[i].color = this.pivotColor;
 			this.canvasArray();
 		} else if (animate === 'unselectPivot') {
-			this.displayArr[i].color = this.defaultColor;
+			this.displayArr[i].color = this.activeColor;
 			this.canvasArray();
 		} else if (animate === 'compare') {
 			this.colorSwap(this.compareColor, i, j);
 			this.canvasArray();
-		} else if (animate === 'swap') {		
+			this.colorSwap(this.activeColor, i, j);
+		} else if (animate === 'swap') {
 			this.canvasArray(i, j);
 			this.swap(this.displayArr, i, j);
+			this.colorSwap(this.activeColor, i, j);
 		} else if (animate === 'temp') {
 			this.displayArr[i].color = this.tempColor;
 			this.canvasArray();
 		} else if (animate === 'assign') {
 			this.displayArr[i].value = j;
 			this.displayArr[i].color = this.defaultColor;
-			// j = undefined;
 			this.canvasArray();
 		}
-		this.colorSwap(this.defaultColor, i, j);
 	}
 
 	colorSwap (type, i, j) {
@@ -198,8 +211,17 @@ class Sort {
 		this.next.push(['unselectPivot', i]);
 	}
 
+	active (left, right) {
+		this.next.push(['active', left, right]);
+	} 
+
+	inactive (left, right) {
+		this.next.push(['inactive', left, right]);
+	}
+
 	/*----------------- QUICKSORT -----------------*/
 	partition (left, right) {
+		this.active(left, right);
 	  let i, j;
 	  //choose random pivot and swap with first element in array partition
 	  let pivot = Math.floor(Math.random() * (right - left) + left);
@@ -214,7 +236,8 @@ class Sort {
 	  }
 
 	  if (left !== i - 1) this.displaySwap(left, i - 1);
-	  this.unselectPivot(i - 1);
+	  //this.unselectPivot(i - 1);
+	  this.inactive(left, right);
 	  return i - 1;
 	}
 
@@ -239,6 +262,7 @@ class Sort {
 	}
 
 	merge (left, middle, right) {
+		this.active(left, right);
 	  let temp = [],
 	      i = left,
 	      j = middle + 1

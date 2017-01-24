@@ -86,6 +86,42 @@ button {
   bottom: 0;
 }
 
+.color {
+	width: 20px;
+  height: 20px;
+  border-radius: 20px;
+  position: relative;
+  left: 1vw;
+  margin-top: 2vh;
+}
+
+.color-text {
+	width: 11vw;
+	font-size: 1.1em;
+	position: relative;
+  left: 1.5vw;
+}
+
+#active {
+	background: #FAFAFA;
+}
+
+#compare {
+	background: #18FFFF;
+}
+
+#swap {
+	background: #E040FB;
+}
+
+#pivot {
+	background: #FFFF8D;
+}
+
+#temp {
+	background: #B2FF59;
+}
+
 #reset-btn {
 	left: 0.1vw;
 }
