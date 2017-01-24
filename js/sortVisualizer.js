@@ -6,6 +6,7 @@ class Sort {
 		this.compareColor = '#18FFFF';
 		this.swapColor = '#E040FB';
 		this.pivotColor = '#FFFF8D';
+		this.tempColor = '#B2FF59';
 		this.sort = 'quick';
 		this.size = 20;
 		this.interval = 100;
@@ -140,23 +141,28 @@ class Sort {
 		} else if (animate === 'unselectPivot') {
 			this.displayArr[i].color = this.defaultColor;
 			this.canvasArray();
-		} else {
-			if (animate === 'compare') {
-				this.colorSwap(i, j, this.compareColor);
-				this.canvasArray();
-			}
-			if (animate === 'swap') {
-				this.canvasArray(i, j);
-				this.swap(this.displayArr, i, j);
-			}
+		} else if (animate === 'compare') {
+			this.colorSwap(this.compareColor, i, j);
+			this.canvasArray();
+		} else if (animate === 'swap') {		
+			this.canvasArray(i, j);
+			this.swap(this.displayArr, i, j);
+		} else if (animate === 'temp') {
+			this.displayArr[i].color = this.tempColor;
+			this.canvasArray();
+		} else if (animate === 'assign') {
+			this.displayArr[i].value = j;
+			this.displayArr[i].color = this.defaultColor;
+			// j = undefined;
+			this.canvasArray();
 		}
-		this.colorSwap(i, j, this.defaultColor);
+		this.colorSwap(this.defaultColor, i, j);
 	}
 
-	colorSwap (i, j, type) {
-		if (this.displayArr[i] && this.displayArr[j]) {
-			this.displayArr[i].color = this.displayArr[i].color !== this.pivotColor ? type : this.pivotColor;
-			this.displayArr[j].color = this.displayArr[j].color !== this.pivotColor ? type : this.pivotColor;
+	colorSwap (type, i, j) {
+		if (this.displayArr[j]) {
+			if (this.displayArr[i].color !== this.pivotColor && this.displayArr[i].color !== this.tempColor) this.displayArr[i].color = type;
+			if (this.displayArr[j].color !== this.pivotColor && this.displayArr[j].color !== this.tempColor) this.displayArr[j].color = type;
 		}
 	}
 
@@ -172,6 +178,16 @@ class Sort {
 		this.compareCount++;
 		this.next.push(['compare', i, j]);
 		return this.arr[j] < this.arr[i];
+	}
+
+	assign (i, value) {
+		this.arr[i] = value;
+		this.next.push(['assign', i, value]);
+	}
+
+	displayTemp (temp, i) {
+		temp.push(this.arr[i]);
+		this.next.push(['temp', i]);
 	}
 
 	selectPivot (i) {
@@ -209,6 +225,43 @@ class Sort {
 	  let pivot = this.partition(left, right);
 	  this.quickSort(left, pivot - 1);
 	  this.quickSort(pivot + 1, right);
+	}
+
+	/*----------------- MERGESORT -----------------*/
+	mergeSort (left, right) {
+	  left = left !== undefined ? left : 0;
+	  right = right !== undefined ? right : this.arr.length - 1;
+	  if (left >= right) return;
+	  let middle = Math.floor(right / 2 + left / 2);
+	  this.mergeSort(left, middle);
+	  this.mergeSort(middle + 1, right);
+	  this.merge(left, middle, right);
+	}
+
+	merge (left, middle, right) {
+	  let temp = [],
+	      i = left,
+	      j = middle + 1
+	  while (i <= middle && j <= right) {
+	    if (this.compare(i, j)) {
+	    	this.displayTemp(temp, j);
+	      j++;
+	    } else {
+	    	this.displayTemp(temp, i);
+	      i++;
+	    }
+	  }
+	  while (i <= middle) {
+	  	this.displayTemp(temp, i);
+	    i++;
+	  }
+	  while (j <= right) {
+	  	this.displayTemp(temp, j);
+	    j++;
+	  }
+	  for (let k = left, l = 0; k <= right; k++, l++) {
+	    this.assign(k, temp[l]);
+	  }
 	}
 
 	/*----------------- HEAPSORT -----------------*/
@@ -263,6 +316,9 @@ window.onload = () => {
 	document.getElementById('heap').onclick = () => {
 		sortVis.sort = 'heap';
 	}
+	document.getElementById('merge').onclick = () => {
+		sortVis.sort = 'merge';
+	}
 	document.getElementById('reset-btn').onclick = () => {
 		if (sortVis.animate) window.clearInterval(sortVis.animate);
 		sortVis.buildArray();
@@ -280,5 +336,6 @@ window.onload = () => {
 		sortVis.animate = window.setInterval(sortVis.animateNext, sortVis.interval);
 		if (sortVis.sort === 'quick') sortVis.quickSort();
 		if (sortVis.sort === 'heap') sortVis.heapSort();
+		if (sortVis.sort === 'merge') sortVis.mergeSort();
 	}
 }

@@ -83,7 +83,7 @@ button {
   background: #212121;
   border: none;
   position: absolute;
-  bottom: 1px;
+  bottom: 0;
 }
 
 #reset-btn {
