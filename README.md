@@ -1,4 +1,7 @@
 # sort.js
+
+![alt tag](https://github.com/christophermanahan/sort.js/blob/master/screenshot.png)
+
 This is a sorting algorithm visualizer that allows the user to control the speed of animation and the number of array elements.
 
 There are animations for bubbleSort, insertionSort, quickSort, mergeSort, and heapSort, and I hope to learn more about hybrid sorting algorithms like timSort and include them for those interested.
