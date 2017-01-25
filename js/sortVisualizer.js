@@ -136,7 +136,6 @@ class Sort {
 				i = next[1],
 				j = next[2];
 		if (animate === 'active') {
-			console.log('here')
 			for (let k = i; k <= j; k++) {
 				if (this.displayArr[k].color !== this.pivotColor && this.displayArr[k].color !== this.tempColor) {
 					this.displayArr[k].color = this.activeColor;
@@ -207,16 +206,45 @@ class Sort {
 		this.next.push(['selectPivot', i]);
 	}
 
-	unselectPivot (i) {
-		this.next.push(['unselectPivot', i]);
-	}
-
 	active (left, right) {
 		this.next.push(['active', left, right]);
 	} 
 
 	inactive (left, right) {
 		this.next.push(['inactive', left, right]);
+	}
+
+	/*----------------- BUBBLESORT -----------------*/
+	bubbleSort () {
+		this.active(0, this.arr.length - 1);
+	  let bubbleLength = this.arr.length;
+	  let sorted = false;
+	  for (let i = 0; i < this.arr.length && !sorted; i++) {
+	    sorted = true;
+	    bubbleLength--;
+	    for (let j = 0; j < bubbleLength; j++) {
+	    	if (this.compare(j, j + 1)) {
+	        sorted = false;
+	        this.displaySwap(j, j + 1);
+	      }
+	    }
+	    this.inactive(bubbleLength, this.arr.length - 1);
+	  }
+	  this.inactive(0, bubbleLength);
+	}
+
+	/*----------------- INSERTIONSORT -----------------*/
+	insertionSort () {
+		let j;
+	  for (let i = 1; i < this.arr.length; i++) {
+	  	j = i;
+	    while (this.arr[j - 1] && this.compare(j - 1, j)) {
+	    	//while insertion sort does not use swaps, they make it easier to visualize the comparison against the temp value
+	      this.displaySwap(j - 1, j);
+	      j--;
+	    }
+	  }
+	  this.inactive(0, this.arr.length);
 	}
 
 	/*----------------- QUICKSORT -----------------*/
@@ -236,7 +264,6 @@ class Sort {
 	  }
 
 	  if (left !== i - 1) this.displaySwap(left, i - 1);
-	  //this.unselectPivot(i - 1);
 	  this.inactive(left, right);
 	  return i - 1;
 	}
@@ -308,12 +335,15 @@ class Sort {
 	}
 
 	heapSort () {
+		this.active(0, this.arr.length - 1);
 	  this.buildMaxHeap();
 	  for (let i = this.arr.length - 1; i > 0; i--) {
 	    this.displaySwap(0, i)
+	    this.inactive(this.arr.heapsize, this.arr.length - 1);
 	    this.arr.heapsize--;
 	    this.maxHeapify(0);
 	  }
+	  this.inactive(0, 0);
 	}
 }
 
@@ -334,14 +364,20 @@ window.onload = () => {
 		sortVis.buildArray();
 		sortVis.canvasArray();
 	}
+	document.getElementById('bubble').onclick = () => {
+		sortVis.sort = 'bubble';
+	}
+	document.getElementById('insertion').onclick = () => {
+		sortVis.sort = 'insertion';
+	}
 	document.getElementById('quick').onclick = () => {
 		sortVis.sort = 'quick';
 	}
-	document.getElementById('heap').onclick = () => {
-		sortVis.sort = 'heap';
-	}
 	document.getElementById('merge').onclick = () => {
 		sortVis.sort = 'merge';
+	}
+	document.getElementById('heap').onclick = () => {
+		sortVis.sort = 'heap';
 	}
 	document.getElementById('reset-btn').onclick = () => {
 		if (sortVis.animate) window.clearInterval(sortVis.animate);
@@ -358,8 +394,10 @@ window.onload = () => {
 		let interval = e.options[e.selectedIndex].value;
 		sortVis.interval = interval;
 		sortVis.animate = window.setInterval(sortVis.animateNext, sortVis.interval);
+		if (sortVis.sort === 'bubble') sortVis.bubbleSort();
+		if (sortVis.sort === 'insertion') sortVis.insertionSort();
 		if (sortVis.sort === 'quick') sortVis.quickSort();
-		if (sortVis.sort === 'heap') sortVis.heapSort();
 		if (sortVis.sort === 'merge') sortVis.mergeSort();
+		if (sortVis.sort === 'heap') sortVis.heapSort();
 	}
 }
