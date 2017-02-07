@@ -10,6 +10,6 @@ A display array of objects containing the value and color information of each ar
 
 HTML 5 canvas is used to provide swapping animations that adjust to the user specified interval and redraw the display array objects according to the the next animation as well as provide insight into the currently active subarrays for these algorithms.
 
-Writing this visualizer helped me realize that my original implentation of quickSort was not truly in-place and helped me understand the difficulties and downsides to an in-place merge function!
+Writing this visualizer helped me realize that my original implentation of quickSort was not truly in-place and helped me understand the difficulties and downsides of an in-place merge function!
 
 Also, I <3 neon colors on dark backgrounds.
